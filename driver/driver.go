@@ -31,7 +31,7 @@ func InitializeDB() (dberr error) {
 
 // Query to get user data from username
 func GetUser(username string, db *sql.DB) (user objects.User, exists bool, err error) {
-	err = db.QueryRow("SELECT id, username, email, password FROM users WHERE username=$1", 1).Scan(&user.ID, &user.Username, &user.Email, &user.password)
+	err = db.QueryRow("SELECT id, username, email, password FROM users WHERE username=$1", 1).Scan(&user.ID, &user.Username, &user.Email, &user.Passkey)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return user, false, nil
