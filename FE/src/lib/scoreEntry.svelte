@@ -1,5 +1,7 @@
 <script lang="ts">
+    import ScreenshotPreview from './screenshotPreview.svelte';
     export let isOpen = false;
+    let selectedFile: File | null = null;
 
     function closeModal() {
         isOpen = false;
@@ -15,6 +17,13 @@
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === 'Escape') {
             closeModal();
+        }
+    }
+
+    function handleFileSelect(event: Event) {
+        const input = event.target as HTMLInputElement;
+        if (input.files && input.files.length > 0) {
+            selectedFile = input.files[0];
         }
     }
 </script>
@@ -48,9 +57,11 @@
                         type="file" 
                         id="fileInput" 
                         name="evidenceUpload" 
-                        accept="image/png, image/jpeg, video/*"
+                        accept="image/png, image/jpeg"
+                        on:change={handleFileSelect}
                     />
                 </div>
+                <ScreenshotPreview imageFile={selectedFile} />
                 <div class="form-group">
                     <button type="submit">Submit Score</button>
                 </div>
