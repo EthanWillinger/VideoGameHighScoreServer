@@ -1,2 +1,3 @@
 # Ignore the vendor folder
-vendor/
+BE/vendor/
+FE/node_modules/

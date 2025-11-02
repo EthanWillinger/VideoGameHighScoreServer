@@ -55,14 +55,14 @@ func GetGame(gameID int, db *sql.DB) (game objects.Game, exists bool, err error)
 
 // Query to get scores from game id
 func GetScoresByGame(gameID int, db *sql.DB) (scores []objects.Score, exists bool, err error) {
-	rows, err := db.Query("SELECT id, game_id, user_id, score, date FROM scores WHERE game_id=$1 ORDER BY score DESC", gameID)
+	rows, err := db.Query("SELECT id, game_id, user_id, score, date, score_type FROM scores WHERE game_id=$1 ORDER BY score DESC", gameID)
 	if err != nil {
 		return nil, false, err
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var score objects.Score
-		err := rows.Scan(&score.ID, &score.GameID, &score.UserID, &score.Score, &score.Date)
+		err := rows.Scan(&score.ID, &score.GameID, &score.UserID, &score.Score, &score.Date, &score.ScoreType)
 		if err != nil {
 			return nil, false, err
 		}

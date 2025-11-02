@@ -9,4 +9,5 @@ type Score struct {
 	ImageName string    `json:"image_name"`
 	Date      time.Time `json:"date"` // Use `time.Time` if you prefer
 	Score     int       `json:"score"`
+	ScoreType string    `json:"score_type"`
 }
