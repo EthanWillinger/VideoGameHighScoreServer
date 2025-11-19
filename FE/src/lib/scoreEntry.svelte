@@ -2,13 +2,15 @@
     import ScreenshotPreview from './screenshotPreview.svelte';
     export let isOpen = false;
     let selectedFile: File | null = null;
-
+    let score: string = '';
+    let scoretype: string = '';
+    let gameTitle: string = '';
+    let username: string = '';
     function closeModal() {
         isOpen = false;
     }
 
     function handleOverlayClick(event: MouseEvent) {
-        // Close only if clicking the overlay background, not the modal content
         if (event.target === event.currentTarget) {
             closeModal();
         }
@@ -24,6 +26,52 @@
         const input = event.target as HTMLInputElement;
         if (input.files && input.files.length > 0) {
             selectedFile = input.files[0];
+        }
+    }
+
+    function handleScoreChange(event: Event) {
+        const input = event.target as HTMLInputElement;
+        score = input.value;   
+    }
+
+    function isValidScore(scoreType: string, scoreValue: string) : boolean {
+        if (scoreType === 'numeric') {
+            return /^\d+$/.test(scoreValue);
+        } else if (scoreType === 'time') {
+            return /^\d{1,2}:\d{2}(\.\d{1,3})?$/.test(scoreValue);
+        } 
+        return false;
+    }
+
+    async function handleScoreSubmission(event: Event) {
+        event.preventDefault();
+        if (selectedFile != null && isValidScore(scoretype, score)) {
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('score', score);
+            formData.append('gameTitle', gameTitle);
+            formData.append('username', username);
+            try {
+                const response = await fetch('/submit-score', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`)
+                }
+
+                const result = await response.json();
+                console.log('Score submitted successfully:', result);
+                closeModal();
+                selectedFile = null;
+                score = '';
+
+            } catch (error) {
+                console.error('Error submitting score:', error);
+            }
+        } else {
+            alert('Please enter a score and select a file before submitting.');
         }
     }
 </script>
@@ -49,6 +97,7 @@
                         pattern="\d*"
                         inputmode="numeric"
                         placeholder="Enter your score"
+                        on:change={handleScoreChange}
                     >
                 </div>
                 <div class="form-group">
@@ -63,7 +112,7 @@
                 </div>
                 <ScreenshotPreview imageFile={selectedFile} />
                 <div class="form-group">
-                    <button type="submit">Submit Score</button>
+                    <button type="submit" on:click={handleScoreSubmission}>Submit Score</button>
                 </div>
             </form>
         </div>
